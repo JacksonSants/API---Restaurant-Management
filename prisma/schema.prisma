@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  address   Address[]
+
+  @@map("user")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  image       String   @db.VarChar(500)
+  description String
+  price       Float
+  category    String
+  item        Item[]
+
+  @@map("product")  
+}
+
+model Item {
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now()) @map("created_at")
+  amountProduct Int
+  totalPrice    Float
+  itens         Product  @relation(fields: [productId], references: [id])
+  productId     String   @unique @map("product_id")
+}
+
+model Admin {
+  id       String @id @default(uuid())
+  cnpj     String
+  email    String
+  password String
+  level    String
+
+  @@map("Admin")
+}
+
+model Address {
+  id             Int    @id @default(autoincrement())
+  street         String
+  number         Int
+  neighborhood   String
+  complement     String
+  referencePoint String  @db.VarChar(255)
+  userAdress     User    @relation(fields: [userId], references: [id])
+  userId         String  @unique @map("user_id")
+  
+  @@map("address")  // Ensure this matches the actual table name
+}
+
